@@ -1,13 +1,14 @@
-from reportlab.pdfgen import canvas
+import pandas as pd
 from datetime import datetime
+import os
 
-def generate_report(history):
-    filename = f'reports/report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf'
-    c = canvas.Canvas(filename)
-    c.drawString(100, 800, "Отчет: Учёт велосипедов")
-    y = 750
-    for record in history:
-        c.drawString(100, y, f"{record['timestamp']} — {record['file']} — Найдено: {record['bikes']}")
-        y -= 30
-    c.save()
+def generate_excel_report(history):
+    os.makedirs("reports", exist_ok=True)
+
+    df = pd.DataFrame(history)
+    df = df[["timestamp", "type", "filename", "count"]]
+    df.columns = ["Время", "Тип", "Имя файла", "Количество велосипедов"]
+    filename = f"reports/report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    df.to_excel(filename, index=False)
+
     return filename
